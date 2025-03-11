@@ -1,7 +1,7 @@
 import unittest
 import sqlite3
 import os
-from inventory_management import (
+from projects.system_architecture.inventory.inventory_management import (
     setup_database, add_product, update_product, 
     delete_product, search_product, view_products
 )
