@@ -16,30 +16,19 @@ The `test_inventory_management.py` file contains unit tests for the **Inventory 
 ## 3️⃣ How to Run Tests
 ### ✅ Step 1: Navigate to Project Directory
 Open a terminal and navigate to the `inventory_management_system` folder:
-```sh
+
 cd path/to/inventory_management_system
 
 ✅ Step 2: Run Tests Using unittest
 Run all tests with:
-
-sh
-Copy
-Edit
 python -m unittest discover -s tests
-To run only a specific test, use:
 
-sh
-Copy
-Edit
+To run only a specific test, use:
 python -m unittest tests.test_inventory_management.TestInventoryManagement.test_add_product
 
 4️⃣ Expected Output
 If all tests pass, you should see:
 
-markdown
-Copy
-Edit
-.....
 ----------------------------------------------------------------------
 Ran 5 tests in X.XXXs
 
