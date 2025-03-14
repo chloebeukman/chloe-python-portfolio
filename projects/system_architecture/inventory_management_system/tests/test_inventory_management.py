@@ -1,7 +1,13 @@
+import sys
+import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import unittest
 import sqlite3
 import os
-from projects.system_architecture.inventory.inventory_management import (
+
+from inventory_management import (
     setup_database, add_product, update_product, 
     delete_product, search_product, view_products
 )

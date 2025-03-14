@@ -5,22 +5,20 @@
 📌 1. Folder Structure
 
 📂 inventory_management_system/
-│── 📂 database/  
-│   ├── inventory.db   # SQLite database file  
 │── 📂 docs/
 │   ├── architecture_documentation.md 
 │   ├── code_documentation.md  
 │   ├── database_schema.md
 │   ├── testing_documentation.md  
 │   ├── user_guide.md 
-│── 📂 inventory/
-│   ├── inventory_management.py  # Core logic  
 │── 📂 tests/  
 │   ├── __init__.py
-│   ├── test_inventory_management.py  # Unit tests  
-│── __init__.py  
+│   ├── test_inventory_management.py        # Unit tests  
+│── __init__.py
+│── inventory_management.py     # Core logic  
+│── inventory.db                # SQLite database file  
 │── README.md  
-│── requirements.txt  
+│── requirements.txt
 
 📌 2. System Overview
 The Inventory Management System is a Python-based application that allows users to manage products in an SQLite database.
