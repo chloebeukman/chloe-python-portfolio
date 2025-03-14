@@ -1,45 +1,31 @@
-#📄 System Architecture Documentation
+# 📄System Architecture Documentation
 
-##🏗️ Project: Inventory Management System
+## 🏗️ Project: Inventory Management System
 
-📌 1. Folder Structure
+### 📌 1. Folder Structure
 
 📂 inventory_management_system/
-
 │── 📂 docs/
-
 │   ├── architecture_documentation.md 
-
 │   ├── code_documentation.md
-
 │   ├── database_schema.md
-
 │   ├── testing_documentation.md
-
 │   ├── user_guide.md
-
 │── 📂 tests/
-
 │   ├── __init__.py
-
 │   ├── test_inventory_management.py        # Unit tests
-
 │── __init__.py
-
 │── inventory_management.py     # Core logic
-
 │── inventory.db                # SQLite database file
-
 │── README.md
-
 │── requirements.txt
 
-📌 2. System Overview
+### 📌 2. System Overview
 
 The Inventory Management System is a Python-based application that allows users to manage products in an SQLite database.
 The system provides CRUD (Create, Read, Update, Delete) operations for inventory management.
 
-📌 3. Database Schema
+### 📌 3. Database Schema
 
 products Table
 
@@ -58,7 +44,7 @@ categories Table
 | id	      | INTEGER       | Unique category ID (PK) |
 | name        | TEXT          | Category name           |
 
-📌 4. Core Components
+### 📌 4. Core Components
 
 | Component                     | Description                   |
 |-------------------------------|-------------------------------|
@@ -68,7 +54,7 @@ categories Table
 | docs/	                        | Documentation folder          |
 | docs/	                        | Documentation folder          |
 
-📌 5. System Workflow
+### 📌 5. System Workflow
 
 1️⃣ Setup:
 
