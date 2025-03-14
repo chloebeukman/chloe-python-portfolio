@@ -21,6 +21,7 @@ python inventory/setup.py
 This initializes the database and creates necessary tables.
 
 3️⃣ Usage Guide
+
 Feature	Command / Description
 Add Product	Adds a new product with name, stock, price, category.
 Update Product	Updates an existing product’s details.
@@ -33,6 +34,7 @@ Run the program in the terminal:
 python inventory_management.py
 
 4️⃣ Troubleshooting
+
 ❌ sqlite3.OperationalError: no such table: products
 ✔️ Run the setup script:
 

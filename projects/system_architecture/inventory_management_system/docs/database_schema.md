@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS products (
 );
 
 🔍 Database Operations
+
 1️⃣ Insert a Product
 
 INSERT INTO products (name, quantity, price) VALUES ('Product Name', 10, 99.99);
