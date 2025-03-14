@@ -4,6 +4,7 @@
 
 ### 📌 1. Folder Structure
 
+```
 📂 inventory_management_system/
 │── 📂 docs/
 │   ├── architecture_documentation.md 
@@ -19,6 +20,7 @@
 │── inventory.db                # SQLite database file
 │── README.md
 │── requirements.txt
+```
 
 ### 📌 2. System Overview
 
