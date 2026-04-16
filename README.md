@@ -1,63 +1,87 @@
-# Python Coding Portfolio
+# 👩‍💻 Chloe Beukman | Python Developer
 
-## Overview
-This repository showcases my Python projects and concepts learned during my bootcamp. 
-It includes practical applications, algorithms, and documentation to demonstrate my coding skills.
+> Junior Software Developer focused on building practical, user-friendly applications that solve real-world problems.
 
-## Folder Structure
-```
-chloe-python-portfolio/
-│── README.md          # Overview of the portfolio
-│── projects/          # Directory for projects
-│   ├── expense_tracker/      # Budget & expense tracking app
-│   ├── oop_inheritance/      # OOP concepts (inheritance, polymorphism, etc.)
-│   ├── databases/            # SQL and database projects
-│   ├── system_architecture/  # Architectural pattern examples
-│   ├── algorithms/           # Sorting, searching, data structures
-│── docs/              # Documentation using Sphinx
-│── tests/             # Unit tests for projects
-│── requirements.txt   # Dependencies (if needed)
-│── .gitignore         # Ignore unnecessary files
-```
+---
 
-## Projects
-### 1. Expense Tracker
-- A **Tkinter-based** budget and expense tracking application.
-- Uses **SQLite** for data storage.
-- Features **goal tracking** and **data visualization**.
+## 🚀 Featured Projects
 
-### 2. Object-Oriented Programming (OOP) Examples
-- Demonstrates **inheritance, encapsulation, and polymorphism**.
-- Includes Python class-based implementations.
+### 💰 Expense Tracker App
 
-### 3. Database Projects
-- SQL scripts and queries for managing **structured data**.
-- Demonstrates **CRUD operations, relationships, and indexing**.
+A desktop application that helps users manage their finances by tracking income, expenses, and financial goals in one place.
 
-### 4. System Architecture Patterns
-- Examples of **MVC, layered architecture, and microservices**.
-- Implementations using Python frameworks where applicable.
+**Key Features:**
 
-### 5. Algorithms & Data Structures
-- Sorting and searching algorithms (e.g., **merge sort, quick sort**).
-- Implementations of linked lists, stacks, and queues.
+* Add, update, and delete income and expenses
+* Category management for better organisation
+* Budget calculation based on income vs spending
+* Financial goal tracking
 
-## Getting Started
-1. Clone the repository:
-   ```sh
-   git clone https://github.com/YOUR_USERNAME/chloe-python-portfolio.git
-   ```
-2. Navigate into the directory:
-   ```sh
-   cd chloe-python-portfolio
-   ```
-3. Install dependencies (if applicable):
-   ```sh
-   pip install -r requirements.txt
-   ```
+**Tech Stack:** Python, Tkinter, SQLite
 
-## Contributing
-This portfolio is a work in progress! Any feedback is appreciated.
+👉 [View Project](./projects/expense_tracker)
 
-## License
-This project is open-source and free to use.
+---
+
+### 🤝 Split Fair App
+
+A smart bill-splitting application designed to handle **unequal splits**, tips, and multiple users—perfect for real-life group expenses.
+
+**Key Features:**
+
+* Unequal expense splitting between users
+* Tip handling and payer tracking
+* Logic-driven calculations for accurate results
+* Designed for real-world usability
+
+**Tech Stack:** Python
+
+👉 [View Project](./projects/split_fair)
+
+---
+
+### 🧠 Algorithms & Data Structures
+
+A collection of fundamental algorithms implemented in Python, focusing on clean code and understanding core concepts.
+
+**Includes:**
+
+* Sorting algorithms
+* Searching algorithms
+* Foundational problem-solving techniques
+
+👉 [View Project](./projects/algorithms)
+
+---
+
+## 🛠️ Tech Stack
+
+* Python
+* SQLite
+* Tkinter
+* Git & GitHub
+
+---
+
+## 📈 What I’m Currently Working On
+
+* Enhancing UI/UX in desktop applications
+* Adding advanced features like reporting and analytics
+* Building more real-world, problem-solving projects
+
+---
+
+## 🎯 About Me
+
+I’m an aspiring software developer with a strong interest in building applications that are both functional and user-friendly. I enjoy solving practical problems and continuously improving my skills through hands-on projects.
+
+---
+
+## 📬 Contact
+
+* LinkedIn: https://www.linkedin.com/in/chloe-beukman
+* Email: chloe.beukman@gmail.com
+
+---
+
+⭐ *Feel free to explore my projects and follow my journey as I grow as a developer.*
