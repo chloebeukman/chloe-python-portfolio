@@ -1,83 +1,107 @@
-# 🤝 Split Fair App
+# 💸 Split Fair
 
-A Python application designed to fairly split group expenses, supporting unequal contributions, tips, and multiple participants.
+A React Native mobile app for splitting bills fairly — equally or by custom amounts — with receipt scanning via OCR.
 
----
-
-## 🚀 Features
-
-* Split expenses between multiple people
-* Support for **unequal splits**
-* Add tips and include them in calculations
-* Track who paid and who owes
-* Calculate exact amounts owed per person
+![React Native](https://img.shields.io/badge/React_Native-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+![Expo](https://img.shields.io/badge/Expo-000020?style=flat-square&logo=expo&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
 
 ---
 
-## 💡 Problem It Solves
+## ✨ Features
 
-Splitting bills in real life is rarely equal. This app helps groups accurately divide expenses when:
-
-* People share items unevenly
-* One person pays for everything
-* Tips need to be included
-* Not everyone participates equally
+- **Receipt scanning** — use your camera to scan a receipt; OCR auto-detects the total
+- **Equal splits** — divide any bill evenly across the group
+- **Custom percentage splits** — assign different percentages to each person
+- **Fixed amount splits** — specify exactly how much each person pays
+- **Tip calculator** — add a tip percentage before splitting
+- **Multiple payers** — handles situations where more than one person paid upfront
+- **Settle up** — calculates the minimum transactions needed to balance the group
+- **Share results** — send the breakdown to your group via any messaging app
 
 ---
 
-## 📊 Example Scenario
+## 📱 Screenshots
 
-3 friends go out to eat:
-
-- Alice pays R300  
-- Bob pays R150  
-- Chloe pays R0  
-- Tip: R45  
-
-The app calculates how much each person owes or is owed, ensuring the bill is split fairly based on contributions.
-
-## 🧾 Example Output
-
-Alice is owed: R120  
-Bob owes: R30  
-Chloe owes: R90  
+> _Will add screenshots here_
 
 ---
 
 ## 🛠️ Tech Stack
 
-* Python
+| Layer         | Technology                        |
+|---------------|-----------------------------------|
+| Framework     | React Native + Expo               |
+| Language      | JavaScript (ES6+)                 |
+| Navigation    | React Navigation (Native Stack)   |
+| Camera / OCR  | expo-camera + Receipt OCR API     |
+| OCR Backend   | [receipt-ocr-api](https://github.com/chloebeukman/receipt-ocr-api) (Vercel) |
 
 ---
 
-## ▶️ How to Run
+## 🚀 Getting Started
+
+### Prerequisites
+- [Node.js](https://nodejs.org/) (v18+)
+- [Expo CLI](https://docs.expo.dev/get-started/installation/)
+- Expo Go app on your phone ([iOS](https://apps.apple.com/app/expo-go/id982107779) / [Android](https://play.google.com/store/apps/details?id=host.exp.exponent))
+
+### Installation
 
 ```bash
-git clone https://github.com/chloebeukman/chloe-python-portfolio.git
-cd chloe-python-portfolio/projects/split_fair
-python app.py
+# Clone the repository
+git clone https://github.com/chloebeukman/split-fair.git
+cd split-fair
+
+# Install dependencies
+npm install
+
+# Start the development server
+npx expo start
+```
+
+Scan the QR code with your phone's camera (iOS) or the Expo Go app (Android).
+
+---
+
+## 📁 Project Structure
+
+```
+split_fair/
+├── App.js                        # Navigation setup
+├── package.json
+├── screens/
+│   ├── HomeScreen.js             # Landing screen
+│   ├── AddPeopleScreen.js        # Add group members & record payments
+│   ├── ScanReceiptScreen.js      # Camera + OCR integration
+│   ├── SplitScreen.js            # Choose split method
+│   └── ResultsScreen.js          # Final breakdown & settle up
+└── utils/
+    ├── splitLogic.js             # All calculation logic (pure functions)
+    └── theme.js                  # Shared colours, fonts & styles
 ```
 
 ---
 
-## 🧠 What I Learned
+## 🔗 Related Project
 
-* Designing logic for unequal financial distributions
-* Handling edge cases in calculations
-* Structuring code for clarity and scalability
-* Thinking from a real-world user perspective
+This app connects to the **Receipt OCR API** — a companion REST API that extracts totals from receipt images using OCR.
 
----
-
-## 🚧 Future Improvements
-
-* Add a graphical user interface (GUI)
-* Save and load expense sessions
-* Export results to PDF or CSV
-* Add user profiles
+[View Receipt OCR API →](https://github.com/chloebeukman/receipt-ocr-api)
 
 ---
 
-## 🎯 Project Purpose
+## 💡 What I Learned
 
-This project was built to solve a common real-world problem: fairly splitting group expenses in a way that is accurate, transparent, and easy to use.
+- Building multi-screen mobile apps with React Navigation
+- Integrating device hardware (camera) via Expo
+- Consuming a REST API from a mobile client
+- Writing pure utility functions with clear separation from UI logic
+- Handling edge cases in financial calculations (rounding, validation)
+- Designing for mobile UX — input flow, feedback, and error handling
+
+---
+
+## 👩‍💻 Author
+
+**Chloe Beukman** · [GitHub](https://github.com/chloebeukman) · [LinkedIn](https://www.linkedin.com/in/chloe-beukman)
