@@ -2,8 +2,8 @@
 // -----------------------------
 // Allows users to scan a receipt using the device camera.
 // Sends the image to the receipt-ocr-api on Vercel for text extraction,
-// then parses the total from the response.
-// Users can also enter the total manually.
+// parsing both individual items and the total from the response.
+// Users can proceed to item allocation or manual splitting.
 
 import React, { useState, useRef } from 'react';
 import {
@@ -13,33 +13,7 @@ import {
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { colours, globalStyles, buttonStyle } from '../utils/theme';
 
-// ── Your deployed OCR API endpoint ──────────
-const OCR_API_URL = 'https://receipt-ocr-api-sage.vercel.app/api';
-
-/**
- * Attempt to extract a total amount from OCR text.
- * Looks for common receipt patterns like "TOTAL", "AMOUNT DUE", etc.
- */
-function parseTotal(ocrText) {
-  if (!ocrText) return null;
-
-  const patterns = [
-    /total[:\s]+r?\s*([\d]+[.,][\d]{2})/i,
-    /amount due[:\s]+r?\s*([\d]+[.,][\d]{2})/i,
-    /grand total[:\s]+r?\s*([\d]+[.,][\d]{2})/i,
-    /balance[:\s]+r?\s*([\d]+[.,][\d]{2})/i,
-    /r\s*([\d]+[.,][\d]{2})\s*$/im,
-  ];
-
-  for (const pattern of patterns) {
-    const match = ocrText.match(pattern);
-    if (match) {
-      // Normalise comma-as-decimal (e.g. South African format)
-      return parseFloat(match[1].replace(',', '.'));
-    }
-  }
-  return null;
-}
+const OCR_API_URL = 'https://receipt-ocr-api-sage.vercel.app/api/scan-receipt';
 
 export default function ScanReceiptScreen({ navigation, route }) {
   const { people, payments } = route.params;
@@ -47,13 +21,15 @@ export default function ScanReceiptScreen({ navigation, route }) {
   const [permission, requestPermission] = useCameraPermissions();
   const [cameraOpen, setCameraOpen]     = useState(false);
   const [scanning, setScanning]         = useState(false);
-  const [ocrResult, setOcrResult]       = useState('');
+  const [scannedItems, setScannedItems] = useState([]);
   const [manualTotal, setManualTotal]   = useState('');
   const [tipPercent, setTipPercent]     = useState('0');
+  const [scanComplete, setScanComplete] = useState(false);
   const cameraRef = useRef(null);
 
-  const btnGreen = buttonStyle(colours.accentGreen);
-  const btnBlue  = buttonStyle(colours.accentBlue);
+  const btnGreen  = buttonStyle(colours.accentGreen);
+  const btnBlue   = buttonStyle(colours.accentBlue);
+  const btnGold   = buttonStyle(colours.accentGold);
 
   // ── Open camera ───────────────────────────
   const openCamera = async () => {
@@ -70,7 +46,7 @@ export default function ScanReceiptScreen({ navigation, route }) {
     setCameraOpen(true);
   };
 
-  // ── Capture photo and send to OCR API ────
+  // ── Capture and scan ──────────────────────
   const captureAndScan = async () => {
     if (!cameraRef.current) return;
     setScanning(true);
@@ -84,7 +60,7 @@ export default function ScanReceiptScreen({ navigation, route }) {
       const response = await fetch(OCR_API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: photo.base64 }),
+        body: JSON.stringify({ imageBase64: photo.base64 }),
       });
 
       if (!response.ok) {
@@ -92,22 +68,29 @@ export default function ScanReceiptScreen({ navigation, route }) {
       }
 
       const data = await response.json();
-      const text = data.text || data.result || '';
-      setOcrResult(text);
       setCameraOpen(false);
+      setScanComplete(true);
 
-      // Try to auto-fill the total
-      const parsed = parseTotal(text);
-      if (parsed) {
-        setManualTotal(parsed.toString());
+      // Use parsed items if available
+      if (data.items && data.items.length > 0) {
+        setScannedItems(data.items);
+        if (data.total) {
+          setManualTotal(data.total.toString());
+        }
         Alert.alert(
-          'Total detected! 🎉',
-          `We found R ${parsed.toFixed(2)}. You can edit this if needed.`
+          'Receipt scanned! 🎉',
+          `Found ${data.items.length} items. Review them below then allocate to your group.`
+        );
+      } else if (data.total) {
+        setManualTotal(data.total.toString());
+        Alert.alert(
+          'Total detected!',
+          `We found R ${data.total.toFixed(2)} but couldn't parse individual items. You can split manually.`
         );
       } else {
         Alert.alert(
-          'Could not auto-detect total',
-          'Please enter the total manually below.'
+          'Could not parse receipt',
+          'Please enter the total manually and use a split method below.'
         );
       }
     } catch (error) {
@@ -118,23 +101,51 @@ export default function ScanReceiptScreen({ navigation, route }) {
     }
   };
 
-  // ── Proceed to split screen ───────────────
-  const proceed = () => {
+  // ── Calculate total with tip ──────────────
+  const getTotal = () => {
+    const subtotal = parseFloat(manualTotal) || 0;
+    const tip      = parseFloat(tipPercent) || 0;
+    const tipAmt   = parseFloat((subtotal * (tip / 100)).toFixed(2));
+    return {
+      subtotal,
+      tipPercent: tip,
+      tipAmount: tipAmt,
+      total: parseFloat((subtotal + tipAmt).toFixed(2)),
+    };
+  };
+
+  // ── Proceed to item allocation ────────────
+  const proceedToItemAllocation = () => {
+    if (scannedItems.length === 0) {
+      Alert.alert('No items', 'Please scan a receipt first to use item allocation.');
+      return;
+    }
+    const { subtotal, tipPercent: tip, tipAmount, total } = getTotal();
+    navigation.navigate('ItemAllocation', {
+      people,
+      payments,
+      items: scannedItems,
+      subtotal,
+      tipPercent: tip,
+      tipAmount,
+      total,
+    });
+  };
+
+  // ── Proceed to manual split ───────────────
+  const proceedToManualSplit = () => {
     const subtotal = parseFloat(manualTotal);
     if (isNaN(subtotal) || subtotal <= 0) {
       Alert.alert('Invalid total', 'Please enter a valid bill total.');
       return;
     }
-    const tip   = parseFloat(tipPercent) || 0;
-    const tipAmt = parseFloat((subtotal * (tip / 100)).toFixed(2));
-    const total  = parseFloat((subtotal + tipAmt).toFixed(2));
-
+    const { tipPercent: tip, tipAmount, total } = getTotal();
     navigation.navigate('Split', {
       people,
       payments,
       subtotal,
       tipPercent: tip,
-      tipAmount: tipAmt,
+      tipAmount,
       total,
     });
   };
@@ -147,26 +158,16 @@ export default function ScanReceiptScreen({ navigation, route }) {
           <View style={styles.cameraOverlay}>
             <View style={styles.receiptFrame} />
             <Text style={styles.cameraHint}>
-              Align the receipt total within the frame
+              Align the receipt within the frame
             </Text>
             {scanning ? (
-              <ActivityIndicator
-                size="large"
-                color={colours.accentGreen}
-                style={{ marginTop: 20 }}
-              />
+              <ActivityIndicator size="large" color={colours.accentGreen} style={{ marginTop: 20 }} />
             ) : (
               <View style={styles.cameraButtons}>
-                <TouchableOpacity
-                  style={styles.captureBtn}
-                  onPress={captureAndScan}
-                >
+                <TouchableOpacity style={styles.captureBtn} onPress={captureAndScan}>
                   <Text style={styles.captureBtnText}>📷 Scan</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.cancelBtn}
-                  onPress={() => setCameraOpen(false)}
-                >
+                <TouchableOpacity style={styles.cancelBtn} onPress={() => setCameraOpen(false)}>
                   <Text style={styles.cancelBtnText}>Cancel</Text>
                 </TouchableOpacity>
               </View>
@@ -177,30 +178,40 @@ export default function ScanReceiptScreen({ navigation, route }) {
     );
   }
 
-  // ── Main screen ───────────────────────────
   return (
     <ScrollView style={globalStyles.screen}>
       <Text style={globalStyles.title}>Bill Total</Text>
       <Text style={globalStyles.subtitle}>
-        Scan your receipt or enter the total manually.
+        Scan your receipt to allocate items, or enter the total manually.
       </Text>
 
       {/* Scan button */}
-      <TouchableOpacity
-        style={[btnBlue.btn, styles.scanBtn]}
-        onPress={openCamera}
-        activeOpacity={0.85}
-      >
+      <TouchableOpacity style={[btnBlue.btn, { marginBottom: 8 }]} onPress={openCamera} activeOpacity={0.85}>
         <Text style={btnBlue.btnText}>📷  Scan Receipt</Text>
       </TouchableOpacity>
 
+      {/* Scanned items preview */}
+      {scannedItems.length > 0 && (
+        <View style={globalStyles.card}>
+          <Text style={styles.itemsTitle}>
+            🧾 {scannedItems.length} items scanned
+          </Text>
+          {scannedItems.map((item, index) => (
+            <View key={index} style={[globalStyles.spaceBetween, styles.itemRow]}>
+              <Text style={styles.itemName} numberOfLines={1}>{item.name}</Text>
+              <Text style={styles.itemPrice}>R {item.price.toFixed(2)}</Text>
+            </View>
+          ))}
+        </View>
+      )}
+
       <View style={styles.orDivider}>
         <View style={globalStyles.divider} />
-        <Text style={styles.orText}>or enter manually</Text>
+        <Text style={styles.orText}>enter total</Text>
         <View style={globalStyles.divider} />
       </View>
 
-      {/* Manual total input */}
+      {/* Manual total */}
       <Text style={globalStyles.label}>Bill subtotal (R)</Text>
       <TextInput
         style={globalStyles.input}
@@ -211,7 +222,7 @@ export default function ScanReceiptScreen({ navigation, route }) {
         onChangeText={setManualTotal}
       />
 
-      {/* Tip input */}
+      {/* Tip */}
       <Text style={globalStyles.label}>Tip (%)</Text>
       <TextInput
         style={globalStyles.input}
@@ -227,14 +238,10 @@ export default function ScanReceiptScreen({ navigation, route }) {
         <View style={[globalStyles.card, styles.totalPreview]}>
           <View style={globalStyles.spaceBetween}>
             <Text style={styles.previewLabel}>Subtotal</Text>
-            <Text style={styles.previewValue}>
-              R {parseFloat(manualTotal || 0).toFixed(2)}
-            </Text>
+            <Text style={styles.previewValue}>R {parseFloat(manualTotal || 0).toFixed(2)}</Text>
           </View>
           <View style={globalStyles.spaceBetween}>
-            <Text style={styles.previewLabel}>
-              Tip ({tipPercent || 0}%)
-            </Text>
+            <Text style={styles.previewLabel}>Tip ({tipPercent || 0}%)</Text>
             <Text style={styles.previewValue}>
               R {(parseFloat(manualTotal || 0) * ((parseFloat(tipPercent) || 0) / 100)).toFixed(2)}
             </Text>
@@ -243,104 +250,56 @@ export default function ScanReceiptScreen({ navigation, route }) {
           <View style={globalStyles.spaceBetween}>
             <Text style={styles.totalLabel}>Total</Text>
             <Text style={styles.totalValue}>
-              R {(
-                parseFloat(manualTotal || 0) *
-                (1 + (parseFloat(tipPercent) || 0) / 100)
-              ).toFixed(2)}
+              R {(parseFloat(manualTotal || 0) * (1 + (parseFloat(tipPercent) || 0) / 100)).toFixed(2)}
             </Text>
           </View>
         </View>
       )}
 
-      {/* OCR result (collapsible debug info) */}
-      {ocrResult !== '' && (
-        <View style={globalStyles.card}>
-          <Text style={styles.ocrLabel}>📄 Scanned text:</Text>
-          <Text style={styles.ocrText}>{ocrResult}</Text>
-        </View>
+      {/* Action buttons */}
+      {scannedItems.length > 0 && (
+        <TouchableOpacity
+          style={[btnGold.btn, { marginTop: 16 }]}
+          onPress={proceedToItemAllocation}
+          activeOpacity={0.85}
+        >
+          <Text style={btnGold.btnText}>🧾 Allocate Items by Person →</Text>
+        </TouchableOpacity>
       )}
 
       <TouchableOpacity
-        style={[btnGreen.btn, { marginBottom: 40 }]}
-        onPress={proceed}
+        style={[btnGreen.btn, { marginTop: 8, marginBottom: 40 }]}
+        onPress={proceedToManualSplit}
         activeOpacity={0.85}
       >
-        <Text style={btnGreen.btnText}>Next: Choose Split Method →</Text>
+        <Text style={btnGreen.btnText}>Split Total Manually →</Text>
       </TouchableOpacity>
+
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  scanBtn: { marginBottom: 8 },
-  orDivider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 12,
-    gap: 8,
-  },
-  orText: {
-    color: colours.textMuted,
-    fontSize: 13,
-    flexShrink: 0,
-  },
-  totalPreview: {
-    marginTop: 12,
-    borderLeftWidth: 3,
-    borderLeftColor: colours.accentGreen,
-  },
+  itemsTitle: { color: colours.accentGold, fontWeight: 'bold', fontSize: 14, marginBottom: 8 },
+  itemRow:    { paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colours.bgPanel },
+  itemName:   { color: colours.textPrimary, fontSize: 13, flex: 1, marginRight: 8 },
+  itemPrice:  { color: colours.accentGreen, fontSize: 13, fontWeight: 'bold' },
+  orDivider:  { flexDirection: 'row', alignItems: 'center', marginVertical: 12, gap: 8 },
+  orText:     { color: colours.textMuted, fontSize: 13, flexShrink: 0 },
+  totalPreview: { marginTop: 12, borderLeftWidth: 3, borderLeftColor: colours.accentGreen },
   previewLabel: { color: colours.textMuted, fontSize: 14 },
   previewValue: { color: colours.textPrimary, fontSize: 14 },
   totalLabel:   { color: colours.textPrimary, fontWeight: 'bold', fontSize: 16 },
   totalValue:   { color: colours.accentGreen, fontWeight: 'bold', fontSize: 18 },
-  ocrLabel:     { color: colours.textMuted, fontSize: 12, marginBottom: 4 },
-  ocrText:      { color: colours.textMuted, fontSize: 11, fontFamily: 'monospace' },
   cameraContainer: { flex: 1, backgroundColor: '#000' },
   camera:          { flex: 1 },
-  cameraOverlay: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.4)',
-  },
-  receiptFrame: {
-    width: 280,
-    height: 180,
-    borderWidth: 2,
-    borderColor: colours.accentGreen,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  cameraHint: {
-    color: colours.white,
-    fontSize: 14,
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  cameraButtons: {
-    flexDirection: 'row',
-    gap: 16,
-    marginTop: 8,
-  },
-  captureBtn: {
-    backgroundColor: colours.accentGreen,
-    borderRadius: 50,
-    paddingVertical: 14,
-    paddingHorizontal: 28,
-  },
-  captureBtnText: {
-    color: colours.bgDark,
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  cancelBtn: {
-    backgroundColor: colours.bgPanel,
-    borderRadius: 50,
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-  },
-  cancelBtnText: {
-    color: colours.textPrimary,
-    fontSize: 15,
-  },
+  cameraOverlay:   { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.4)' },
+  receiptFrame:    { width: 300, height: 400, borderWidth: 2, borderColor: colours.accentGreen, borderRadius: 8, marginBottom: 16 },
+  cameraHint:      { color: colours.white, fontSize: 14, textAlign: 'center', marginBottom: 16 },
+  cameraButtons:   { flexDirection: 'row', gap: 16, marginTop: 8 },
+  captureBtn:      { backgroundColor: colours.accentGreen, borderRadius: 50, paddingVertical: 14, paddingHorizontal: 28 },
+  captureBtnText:  { color: colours.bgDark, fontWeight: 'bold', fontSize: 16 },
+  cancelBtn:       { backgroundColor: colours.bgPanel, borderRadius: 50, paddingVertical: 14, paddingHorizontal: 20 },
+  cancelBtnText:   { color: colours.textPrimary, fontSize: 15 },
+  white:           { color: colours.white },
 });

@@ -11,6 +11,7 @@ import { StatusBar } from 'expo-status-bar';
 import HomeScreen from './screens/HomeScreen';
 import AddPeopleScreen from './screens/AddPeopleScreen';
 import ScanReceiptScreen from './screens/ScanReceiptScreen';
+import ItemAllocationScreen from './screens/ItemAllocationScreen';
 import SplitScreen from './screens/SplitScreen';
 import ResultsScreen from './screens/ResultsScreen';
 
@@ -37,12 +38,17 @@ export default function App() {
         <Stack.Screen
           name="AddPeople"
           component={AddPeopleScreen}
-          options={{ title: 'Who\'s Splitting?' }}
+          options={{ title: "Who's Splitting?" }}
         />
         <Stack.Screen
           name="ScanReceipt"
           component={ScanReceiptScreen}
           options={{ title: 'Scan Receipt' }}
+        />
+        <Stack.Screen
+          name="ItemAllocation"
+          component={ItemAllocationScreen}
+          options={{ title: 'Allocate Items' }}
         />
         <Stack.Screen
           name="Split"
