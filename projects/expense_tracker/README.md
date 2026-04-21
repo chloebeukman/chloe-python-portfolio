@@ -20,7 +20,10 @@ A desktop finance management application built with Python and Tkinter, using SQ
 
 ## 🖥️ Screenshots
 
-> _Will add screenshots here_
+<img width="901" height="651" alt="Expense Tracker - Income" src="https://github.com/user-attachments/assets/10dd5df3-6337-4571-b621-fb2c987036fa" />
+<img width="901" height="651" alt="Expense Tracker - Expenses" src="https://github.com/user-attachments/assets/f7abeea3-9316-44dd-9d63-d6cfd9a9254d" />
+<img width="901" height="651" alt="Expense Tracker - Budget" src="https://github.com/user-attachments/assets/dceeaf4f-b75e-4f63-aeaa-a3a4fe21ad2a" />
+<img width="901" height="651" alt="Expense Tracker - Goals" src="https://github.com/user-attachments/assets/187ad50d-a641-4e0f-aa13-2f0ed27767a7" />
 
 ---
 
