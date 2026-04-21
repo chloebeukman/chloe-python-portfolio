@@ -23,7 +23,7 @@ A React Native mobile app for splitting bills fairly — equally or by custom am
 
 ## 📱 Screenshots
 
-> _Will add screenshots here_
+<img width="263" height="533" alt="WhatsApp Image 2026-04-21 at 02 34 29" src="https://github.com/user-attachments/assets/2b8f0e27-a44d-4a8a-aa8d-a4ab5da18b8f" />
 
 ---
 
